@@ -1032,19 +1032,17 @@ def extract_as_list(dict_object, *keys, pop=False, **kwargs):
     return result
 
 def typeslistify(item: 'T.Union[_T, T.List[_T]]',
-                 types: 'T.Union[T.Type[_T], T.Tuple[T.Type[_T]]]') -> T.List[_T]:
+                 types: 'T.Union[T.Type[_T], T.Tuple[T.Type[_T]]]',
+                 flatten: bool = True) -> T.List[_T]:
     '''
     Ensure that type(@item) is one of @types or a
     list of items all of which are of type @types
     '''
-    if isinstance(item, types):
-        item = T.cast(T.List[_T], [item])
-    if not isinstance(item, list):
-        raise MesonException('Item must be a list or one of {!r}'.format(types))
-    for i in item:
+    result = listify(item, flatten)
+    for i in result:
         if i is not None and not isinstance(i, types):
             raise MesonException('List item must be one of {!r}'.format(types))
-    return item
+    return result
 
 def stringlistify(item: T.Union[str, T.List[str]]) -> T.List[str]:
     return typeslistify(item, str)
